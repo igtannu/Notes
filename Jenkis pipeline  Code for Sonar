@@ -1,5 +1,12 @@
 node {
-   
+     stage('SCM Checkout for API Test')
+    {
+      git branch: 'main', url: 'https://github.com/igtannu/cicdLearn.git'
+    }
+     stage('MVN Test'){
+         echo('hi')
+         bat 'mvn clean test'
+     }
     stage('SonarQube Analysis') {
           SCANNER_HOME = tool name: 'Test_Sonar', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
           SONAR_PROJECT_KEY = 'igtannu' 
@@ -13,6 +20,12 @@ node {
             bat "${sonarCmd}"
         }
     }
+    stage('Emailt'){
+       emailext attachLog: true, attachmentsPattern: 'extent-reports\\extent-report.html', body: '''Dear user,
+        pls find attached execution of extent report for Build - $BUILD_NUMBER
+        Thanks and regards 
+        Tanu ''', compressLog: true, subject: 'Extent Report [$BUILD_STATUS] - @PROJECT_NAME - Build - $BUILD_NUMBER', to: 'gtanu848@gmail.com'
+}
     
 }
     
